@@ -12,28 +12,47 @@ import androidx.annotation.StyleableRes;
 
 import java.util.UUID;
 
-import lombok.Setter;
 import nju.androidchat.client.R;
 
-public class ItemTextSend extends LinearLayout implements View.OnLongClickListener {
+import com.bumptech.glide.Glide;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+public class ItemTextReceive extends LinearLayout {
+
+
     @StyleableRes
     int index0 = 0;
 
     private TextView textView;
     private Context context;
     private UUID messageId;
-    @Setter private OnRecallMessageRequested onRecallMessageRequested;
+    private OnRecallMessageRequested onRecallMessageRequested;
+    private ItemTextReceive imageView;
+    private String imgURL;
 
-    public ItemTextSend(Context context, String text, UUID messageId, OnRecallMessageRequested onRecallMessageRequested) {
+
+    public ItemTextReceive(Context context, String text, UUID messageId) {
         super(context);
         this.context = context;
-        inflate(context, R.layout.item_text_send, this);
+        inflate(context, R.layout.item_text_receive, this);
         this.textView = findViewById(R.id.chat_item_content_text);
         this.messageId = messageId;
-        this.onRecallMessageRequested = onRecallMessageRequested;
-
-        this.setOnLongClickListener(this);
         setText(text);
+    }
+    public String getImgURLURL() {
+        return this.imgURL;
+    }
+
+    public void setImgURL(String imgURL) {
+        this.imgURL = imgURL;
+        setURLimage(imgURL);
+    }
+    public void setURLimage(String url) {
+        Glide.with(context).load(url).into(this.imageView);
+    }
+    public void init(Context context) {
+
     }
 
     public String getText() {
@@ -43,24 +62,4 @@ public class ItemTextSend extends LinearLayout implements View.OnLongClickListen
     public void setText(String text) {
         textView.setText(text);
     }
-
-    @Override
-    public boolean onLongClick(View v) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setMessage("确定要撤回这条消息吗？")
-                .setPositiveButton("是", (dialog, which) -> {
-                    if (onRecallMessageRequested != null) {
-                        onRecallMessageRequested.onRecallMessageRequested(this.messageId);
-                    }
-                })
-                .setNegativeButton("否", ((dialog, which) -> {
-                }))
-                .create()
-                .show();
-
-        return true;
-
-
-    }
-
 }

@@ -54,16 +54,26 @@ public class Mvp2TalkActivity extends AppCompatActivity implements Mvp2Contract.
 
                     // 删除所有已有的ItemText
                     content.removeAllViews();
-
+                    String pattern = "!\\[.*?\\]\\(.*?\\)";
                     // 增加ItemText
                     for (ClientMessage message : messages) {
-                        String text = String.format("%s", message.getMessage());
+                        String text = String.format("%s", message.getMessage()).trim();
                         // 如果是自己发的，增加ItemTextSend
-                        if (message.getSenderUsername().equals(this.presenter.getUsername())) {
-                            content.addView(new ItemTextSend(this, text, message.getMessageId(), this));
-                        } else {
-                            content.addView(new ItemTextReceive(this, text, message.getMessageId()));
+                        if(text.matches(pattern)){
+                            String imgURL = text.substring(text.indexOf('(') + 1, text.length() - 1);
+                            if (message.getSenderUsername().equals(this.presenter.getUsername())) {
+                                content.addView(new ItemTextSend(this, imgURL, message.getMessageId(), this));
+                            } else {
+                                content.addView(new ItemTextSend(this, imgURL, message.getMessageId()));
+                            }
+                        }else{
+                            if (message.getSenderUsername().equals(this.presenter.getUsername())) {
+                                content.addView(new ItemTextSend(this, text, message.getMessageId(), this));
+                            } else {
+                                content.addView(new ItemTextReceive(this, text, message.getMessageId()));
+                            }
                         }
+
                     }
 
                     Utils.scrollListToBottom(this);
